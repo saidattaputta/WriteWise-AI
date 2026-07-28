@@ -2,6 +2,7 @@
 
 from fastapi import FastAPI
 
+from app.api.api import api_router
 from app.core.config import settings
 from app.core.logging import setup_logging,get_logger
 
@@ -15,15 +16,6 @@ app = FastAPI(
     description= 'Backend API for WriteWise AI',
 )
 
-@app.get("/")
-def root():
-    return{
-        "message": settings.PROJECT_NAME,
-        'status': 'running'
-    }
+app.include_router(api_router)
 
-@app.get('/health')
-def health_check():
-    return{
-        'status': 'healthy'
-    }
+logger.info('WriteWise AI API started sucessfully')
