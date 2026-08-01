@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from app.core.logging import get_logger
 from app.schemas.letter import LetterRequest, LetterResponse
@@ -16,9 +16,22 @@ logger = get_logger(__name__)
     response_model=LetterResponse,
 )
 def generate_letter(request: LetterRequest):
+    """
+    Generate a simple professional letter.
+    """
 
     logger.info("Letter generation request received.")
 
+    # Example of custom error handling
+    if request.tone.lower() == "angry":
+        logger.warning("Unsupported tone requested: Angry")
+
+        raise HTTPException(
+            status_code=400,
+            detail="Angry tone is not supported.",
+        )
+
+    # Temporary template (AI integration will come in Phase 3)
     letter = f"""
 Dear {request.recipient},
 
@@ -31,6 +44,7 @@ I am writing regarding {request.purpose}.
 Thank you for your time and consideration.
 
 Sincerely,
+
 WriteWise AI User
 """
 
