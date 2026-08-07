@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.core.logging import get_logger
 from app.schemas.letter import LetterRequest, LetterResponse
+from app.services.ai_service import AIService
 
 router = APIRouter(
     prefix="/letters",
@@ -10,47 +11,48 @@ router = APIRouter(
 
 logger = get_logger(__name__)
 
+service = AIService()
+
 
 @router.post(
     "/generate",
     response_model=LetterResponse,
+    summary="Generate a professional letter",
+    description="Generate a professional letter using Gemini AI.",
 )
 def generate_letter(request: LetterRequest):
     """
-    Generate a simple professional letter.
+    Generate a professional letter using the AI service.
     """
 
     logger.info("Letter generation request received.")
 
-    # Example of custom error handling
+    # Example validation
     if request.tone.lower() == "angry":
-        logger.warning("Unsupported tone requested: Angry")
+        logger.warning(
+            "Unsupported tone requested: %s",
+            request.tone,
+        )
 
         raise HTTPException(
             status_code=400,
             detail="Angry tone is not supported.",
         )
 
-    # Temporary template (AI integration will come in Phase 3)
-    letter = f"""
-Dear {request.recipient},
+    try:
+        letter = service.generate_letter(request)
 
-I hope this message finds you well.
+        logger.info("Letter generated successfully.")
 
-I am writing regarding {request.purpose}.
+        return LetterResponse(
+            message="Letter generated successfully.",
+            letter=letter,
+        )
 
-{request.content}
+    except Exception as e:
+        logger.exception("AI letter generation failed.")
 
-Thank you for your time and consideration.
-
-Sincerely,
-
-WriteWise AI User
-"""
-
-    logger.info("Letter generated successfully.")
-
-    return LetterResponse(
-        message="Letter generated successfully.",
-        letter=letter.strip(),
-    )
+        raise HTTPException(
+            status_code=500,
+            detail=f"AI generation failed: {str(e)}",
+        )
