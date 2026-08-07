@@ -1,9 +1,9 @@
 import { generateLetter } from "../services/letterService";
 import { useQuery } from '@tanstack/react-query'
-import { Download, FilePlus2, Filter, MoreHorizontal, PenLine, Plus, Search, SlidersHorizontal, Sparkles, Star, WandSparkles } from 'lucide-react'
+import { Download, FilePlus2, Filter, MoreHorizontal, PenLine, Plus, Search, Sparkles, Star, WandSparkles } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Button, EmptyState, Loader, Modal, useToast, Avatar } from '../components/ui'
+import { Button, EmptyState, Loader, useToast, Avatar } from '../components/ui'
 import { mockApi } from "../services/api";
 import type { Document } from '../types'
 const Header=({eyebrow,title,children}:{eyebrow?:string;title:string;children?:React.ReactNode})=><div className="mb-7 flex flex-wrap items-end justify-between gap-4"><div>{eyebrow&&<p className="mb-1 text-sm font-semibold text-indigo-600">{eyebrow}</p>}<h1 className="page-title">{title}</h1></div>{children}</div>
@@ -33,8 +33,7 @@ export function Generator() {
 
             setOutput(response.letter);
 
-        } catch (error) {
-            console.error(error);
+        } catch {
             setOutput("Failed to connect to the backend.");
         } finally {
             setLoading(false);
