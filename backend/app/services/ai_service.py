@@ -1,5 +1,6 @@
 from app.ai.llm_client import LLMClient
 from app.ai.prompt_builder import PromptBuilder
+from app.schemas.letter import LetterRequest
 
 class AIService:
 
@@ -16,6 +17,6 @@ class AIService:
         Returns:
             str: The generated professional letter.
         """
-        prompt = PromptBuilder.build_letter_prompt(data)
+        prompt = PromptBuilder.build_letter_prompt(data.model_dump())
         response = self.llm_client.generate(prompt)
         return response
