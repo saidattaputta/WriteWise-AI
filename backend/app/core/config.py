@@ -6,6 +6,12 @@ class Settings(BaseSettings):
     API_V1_PREFIX: str = '/api/v1'
     DEBUG: bool = False
 
+
+    AI_PROVIDER: str = 'gemini'
+
+    GEMINI_API_KEY: str = ''
+    OPENAI_API_KEY: str = ''
+
     model_config = SettingsConfigDict(
         env_file= '.env', 
         env_file_encoding= 'utf-8',
