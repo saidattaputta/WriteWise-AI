@@ -33,5 +33,6 @@ Requirements:
 - Maintain the required tone throughout the letter.
 - Do not invent unnecessary details; only use the information provided.
 - Return only the final letter without any additional explanations or commentary.
+- Return only one version of the letter, not multiple versions.
 """
         return prompt.strip()
