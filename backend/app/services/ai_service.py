@@ -1,6 +1,7 @@
 from app.ai.llm_client import LLMClient
 from app.ai.prompt_builder import PromptBuilder
 from app.schemas.letter import LetterRequest
+from app.ai.parser import ResponseParser
 
 class AIService:
 
@@ -19,4 +20,4 @@ class AIService:
         """
         prompt = PromptBuilder.build_letter_prompt(data.model_dump())
         response = self.llm_client.generate(prompt)
-        return response
+        return ResponseParser.parse(response)
