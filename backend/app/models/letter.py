@@ -22,7 +22,7 @@ class Letter(Base):
         index=True,
     )
 
-    recipient_type = Column(
+    recipient = Column(
         String(100),
         nullable=False,
     )
@@ -37,7 +37,7 @@ class Letter(Base):
         nullable=False,
     )
 
-    key_points = Column(
+    content = Column(
         Text,
         nullable=False,
     )

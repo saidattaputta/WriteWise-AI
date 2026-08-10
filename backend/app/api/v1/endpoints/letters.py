@@ -1,10 +1,15 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
 from app.auth.dependencies import get_current_user
-from app.models.user import User
 from app.core.logging import get_logger
+from app.db.database import get_db
+from app.models.letter import Letter
+from app.models.user import User
+from app.repositories.letter_repository import LetterRepository
 from app.schemas.letter import LetterRequest, LetterResponse
 from app.services.ai_service import AIService
+
 
 router = APIRouter(
     prefix="/letters",
@@ -14,6 +19,7 @@ router = APIRouter(
 logger = get_logger(__name__)
 
 service = AIService()
+repository = LetterRepository()
 
 
 @router.post(
@@ -22,14 +28,22 @@ service = AIService()
     summary="Generate a professional letter",
     description="Generate a professional letter using Gemini AI.",
 )
-def generate_letter(request: LetterRequest, current_user: User = Depends(get_current_user)):
+def generate_letter(
+    request: LetterRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     """
-    Generate a professional letter using the AI service.
+    Generate a letter using AI and save it
+    for the authenticated user.
     """
 
-    logger.info("Letter generation request received.")
+    logger.info(
+        "Letter generation request received for user=%s",
+        current_user.email,
+    )
 
-    # Example validation
+    # Validate tone
     if request.tone.lower() == "angry":
         logger.warning(
             "Unsupported tone requested: %s",
@@ -42,17 +56,47 @@ def generate_letter(request: LetterRequest, current_user: User = Depends(get_cur
         )
 
     try:
-        letter = service.generate_letter(request)
+        # Generate letter using AI
+        generated_letter = service.generate_letter(request)
 
-        logger.info("Letter generated successfully.")
+        logger.info(
+            "Letter generated successfully for user=%s",
+            current_user.email,
+        )
 
-        return LetterResponse(
-            message="Letter generated successfully.",
+        # Create database record
+        letter = Letter(
+            user_id=current_user.id,
+            recipient=request.recipient,
+            purpose=request.purpose,
+            tone=request.tone,
+            content=request.content,
+            generated_content=generated_letter,
+        )
+
+        # Save letter
+        saved_letter = repository.create(
+            db=db,
             letter=letter,
         )
 
+        logger.info(
+            "Letter saved successfully with id=%s",
+            saved_letter.id,
+        )
+
+        return LetterResponse(
+            message="Letter generated successfully.",
+            letter=generated_letter,
+        )
+
+    except HTTPException:
+        raise
+
     except Exception as e:
-        logger.exception("AI letter generation failed.")
+        logger.exception(
+            "AI letter generation failed."
+        )
 
         raise HTTPException(
             status_code=500,
