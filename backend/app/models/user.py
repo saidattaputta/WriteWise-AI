@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from sqlalchemy.orm import relationship
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
 
 from app.db.database import Base
@@ -48,6 +49,12 @@ class User(Base):
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
         nullable=False,
+    )
+
+    letters = relationship(
+        "Letter",
+        back_populates="user",
+        cascade="all, delete-orphan",
     )
 
     def __repr__(self):
