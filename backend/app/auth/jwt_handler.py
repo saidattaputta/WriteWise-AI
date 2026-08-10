@@ -2,23 +2,18 @@ from datetime import datetime, timedelta, timezone
 
 from jose import jwt
 
-SECRET_KEY = "writewise-super-secret-key-change-later"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+from app.core.config import settings
 
-def create_access_token(
-    data: dict,
-):
+
+def create_access_token(data: dict) -> str:
     """
-    Generate JWT token.
+    Generate a JWT access token.
     """
 
     to_encode = data.copy()
 
-    expire = datetime.now(
-        timezone.utc
-    ) + timedelta(
-        minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+    expire = datetime.now(timezone.utc) + timedelta(
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
     )
 
     to_encode.update(
@@ -29,6 +24,6 @@ def create_access_token(
 
     return jwt.encode(
         to_encode,
-        SECRET_KEY,
-        algorithm=ALGORITHM,
+        settings.JWT_SECRET_KEY,
+        algorithm=settings.JWT_ALGORITHM,
     )

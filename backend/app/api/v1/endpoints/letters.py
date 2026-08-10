@@ -1,5 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
+from app.auth.dependencies import get_current_user
+from app.models.user import User
 from app.core.logging import get_logger
 from app.schemas.letter import LetterRequest, LetterResponse
 from app.services.ai_service import AIService
@@ -20,7 +22,7 @@ service = AIService()
     summary="Generate a professional letter",
     description="Generate a professional letter using Gemini AI.",
 )
-def generate_letter(request: LetterRequest):
+def generate_letter(request: LetterRequest, current_user: User = Depends(get_current_user)):
     """
     Generate a professional letter using the AI service.
     """
