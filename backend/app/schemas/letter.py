@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-
+from datetime import datetime
 
 class LetterRequest(BaseModel):
     recipient: str = Field(
@@ -37,3 +37,16 @@ class LetterRequest(BaseModel):
 class LetterResponse(BaseModel):
     message: str
     letter: str
+
+class LetterHistoryItem(BaseModel):
+    id: int
+    recipient: str
+    purpose: str
+    tone: str
+    content: str
+    generated_content: str
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        orm_mode = True
