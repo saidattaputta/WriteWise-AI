@@ -54,6 +54,25 @@ class LetterRepository:
             .all()
         )
 
+    def get_by_id_and_user(
+        self,
+        db: Session,
+        letter_id: int,
+        user_id: int,
+    ) -> Letter | None:
+        """
+        Get a letter only if it belongs to the specified user.
+        """
+
+        return (
+            db.query(Letter)
+            .filter(
+                Letter.id == letter_id,
+                Letter.user_id == user_id,
+            )
+            .first()
+        )
+
     def delete(
         self,
         db: Session,

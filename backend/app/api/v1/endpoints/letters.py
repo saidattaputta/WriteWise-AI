@@ -128,3 +128,37 @@ def get_letter_history(
     )
 
     return letters
+
+@router.get(
+    "/{letter_id}",
+    response_model=LetterHistoryItem,
+    summary="Get a single letter",
+)
+def get_letter(
+    letter_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Get a specific letter belonging to the authenticated user.
+    """
+
+    logger.info(
+        "Fetching letter id=%s for user=%s",
+        letter_id,
+        current_user.email,
+    )
+
+    letter = repository.get_by_id_and_user(
+        db=db,
+        letter_id=letter_id,
+        user_id=current_user.id,
+    )
+
+    if letter is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Letter not found",
+        )
+
+    return letter
