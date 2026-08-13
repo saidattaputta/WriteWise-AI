@@ -1,5 +1,6 @@
 import {
   generateLetter,
+  getLetter,
   getLetterHistory,
 } from "../services/letterService";
 
@@ -18,8 +19,8 @@ import {
   WandSparkles,
 } from "lucide-react";
 
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
   Button,
@@ -32,6 +33,18 @@ import {
 import { mockApi } from "../services/api";
 
 import type { Document } from "../types";
+
+// Minimal letter history item type used in this file
+export type LetterHistoryItem = {
+  id: number;
+  recipient: string;
+  purpose: string;
+  tone: string;
+  content: string;
+  generated_content: string;
+  created_at: string;
+  updated_at: string;
+};
 
 
 /* =========================================================
@@ -1422,7 +1435,191 @@ export function Settings() {
   );
 }
 
+export function LetterDetail() {
+  const { letterId } = useParams<{ letterId: string }>();
+  const navigate = useNavigate();
+  const toast = useToast();
 
+  const [letter, setLetter] = useState<LetterHistoryItem | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadLetter() {
+      if (!letterId) {
+        navigate("/history");
+        return;
+      }
+
+      try {
+        setLoading(true);
+
+        const data = await getLetter(Number(letterId));
+
+        setLetter(data);
+      } catch (error) {
+        console.error("Failed to load letter:", error);
+
+        toast.show("Unable to load letter");
+
+        navigate("/history");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadLetter();
+  }, [letterId, navigate]);
+
+  const copyLetter = async () => {
+    if (!letter) return;
+
+    try {
+      await navigator.clipboard.writeText(letter.generated_content);
+      toast.show("Letter copied to clipboard");
+    } catch {
+      toast.show("Failed to copy letter");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="text-sm text-slate-500">
+          Loading letter...
+        </div>
+      </div>
+    );
+  }
+
+  if (!letter) {
+    return null;
+  }
+
+  return (
+    <>
+      <div className="mx-auto max-w-5xl">
+
+        {/* Header */}
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <button
+              onClick={() => navigate("/history")}
+              className="mb-3 text-sm font-medium text-indigo-600 hover:text-indigo-700"
+            >
+              ← Back to history
+            </button>
+
+            <h1 className="text-3xl font-bold tracking-tight">
+              Letter
+            </h1>
+
+            <p className="mt-2 text-sm text-slate-500">
+              View your generated letter
+            </p>
+          </div>
+
+          <Button onClick={copyLetter}>
+            Copy
+          </Button>
+        </div>
+
+        {/* Letter information */}
+        <div className="grid gap-6 lg:grid-cols-3">
+
+          {/* Metadata */}
+          <div className="card h-fit p-6">
+
+            <h2 className="text-lg font-semibold">
+              Details
+            </h2>
+
+            <div className="mt-6 space-y-5">
+
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                  Recipient
+                </p>
+
+                <p className="mt-1 text-sm font-medium">
+                  {letter.recipient}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                  Purpose
+                </p>
+
+                <p className="mt-1 text-sm font-medium">
+                  {letter.purpose}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                  Tone
+                </p>
+
+                <span className="mt-1 inline-flex rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+                  {letter.tone}
+                </span>
+              </div>
+
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                  Created
+                </p>
+
+                <p className="mt-1 text-sm text-slate-600">
+                  {new Date(letter.created_at).toLocaleString()}
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Letter */}
+          <div className="card lg:col-span-2">
+
+            <div className="flex items-center justify-between border-b px-6 py-4">
+              <h2 className="font-semibold">
+                Generated Letter
+              </h2>
+
+              <Button
+                variant="secondary"
+                onClick={copyLetter}
+              >
+                Copy
+              </Button>
+            </div>
+
+            <div className="p-6">
+              <div className="whitespace-pre-wrap text-sm leading-7 text-slate-700">
+                {letter.generated_content}
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Original request */}
+        <div className="card mt-6 p-6">
+
+          <h2 className="text-lg font-semibold">
+            Original Request
+          </h2>
+
+          <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-slate-600">
+            {letter.content}
+          </p>
+
+        </div>
+
+      </div>
+    </>
+  );
+}
 /* =========================================================
    404
 ========================================================= */
