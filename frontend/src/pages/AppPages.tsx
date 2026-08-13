@@ -1,4 +1,5 @@
 import {
+  deleteLetter,
   generateLetter,
   getLetter,
   getLetterHistory,
@@ -34,7 +35,10 @@ import { mockApi } from "../services/api";
 
 import type { Document } from "../types";
 
-// Minimal letter history item type used in this file
+/* =========================================================
+   LETTER TYPES
+========================================================= */
+
 export type LetterHistoryItem = {
   id: number;
   recipient: string;
@@ -45,7 +49,6 @@ export type LetterHistoryItem = {
   created_at: string;
   updated_at: string;
 };
-
 
 /* =========================================================
    SHARED HEADER
@@ -75,7 +78,6 @@ const Header = ({
   </div>
 );
 
-
 /* =========================================================
    MOCK DOCUMENT ROW
    Used by Dashboard
@@ -84,13 +86,11 @@ const Header = ({
 function DocRow({ doc }: { doc: Document }) {
   return (
     <div className="flex items-center gap-3 border-b py-4 last:border-0">
-
       <div className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10">
         <PenLine size={18} />
       </div>
 
       <div className="min-w-0 flex-1">
-
         <p className="truncate text-sm font-semibold">
           {doc.title}
         </p>
@@ -99,7 +99,6 @@ function DocRow({ doc }: { doc: Document }) {
           {doc.type} · {doc.updatedAt} ·{" "}
           {doc.words.toLocaleString()} words
         </p>
-
       </div>
 
       {doc.favorite && (
@@ -115,11 +114,9 @@ function DocRow({ doc }: { doc: Document }) {
       >
         <MoreHorizontal size={18} />
       </button>
-
     </div>
   );
 }
-
 
 /* =========================================================
    REAL LETTER ROW
@@ -129,26 +126,19 @@ function DocRow({ doc }: { doc: Document }) {
 function LetterRow({
   letter,
 }: {
-  letter: {
-    id: number;
-    recipient: string;
-    purpose: string;
-    tone: string;
-    content: string;
-    generated_content: string;
-    created_at: string;
-    updated_at: string;
-  };
+  letter: LetterHistoryItem;
 }) {
   return (
-    <div className="flex items-center gap-3 border-b py-4 last:border-0">
-
-      <div className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10">
+    <Link
+      to={`/history/${letter.id}`}
+      className="flex items-center gap-3 border-b py-4 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-900/50"
+      aria-label={`Open letter from ${letter.recipient}`}
+    >
+      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10">
         <PenLine size={18} />
       </div>
 
       <div className="min-w-0 flex-1">
-
         <p className="truncate text-sm font-semibold">
           {letter.recipient}
         </p>
@@ -156,20 +146,14 @@ function LetterRow({
         <p className="mt-0.5 truncate text-xs text-slate-500">
           {letter.purpose} · {letter.tone}
         </p>
-
       </div>
 
-      <Link
-        to={`/history/${letter.id}`}
-        className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-indigo-600 dark:hover:bg-slate-800"
-      >
+      <div className="rounded-lg p-2 text-slate-400">
         <MoreHorizontal size={18} />
-      </Link>
-
-    </div>
+      </div>
+    </Link>
   );
 }
-
 
 /* =========================================================
    DASHBOARD
@@ -205,7 +189,6 @@ export function Dashboard() {
       </Header>
 
       <div className="grid gap-4 md:grid-cols-3">
-
         <Link
           to="/generator"
           className="card group p-5 hover:border-indigo-300"
@@ -220,7 +203,6 @@ export function Dashboard() {
             Turn a thought into a first draft.
           </p>
         </Link>
-
 
         <Link
           to="/editor"
@@ -237,7 +219,6 @@ export function Dashboard() {
           </p>
         </Link>
 
-
         <Link
           to="/templates"
           className="card p-5 hover:border-indigo-300"
@@ -252,16 +233,11 @@ export function Dashboard() {
             Jump-start your most common work.
           </p>
         </Link>
-
       </div>
 
-
       <div className="mt-8 grid gap-6 xl:grid-cols-[1.6fr_1fr]">
-
         <section className="card p-6">
-
           <div className="flex items-center justify-between">
-
             <h2 className="font-bold">
               Recent documents
             </h2>
@@ -272,11 +248,9 @@ export function Dashboard() {
             >
               View all
             </Link>
-
           </div>
 
           <div className="mt-3">
-
             {docs
               .slice(0, 3)
               .map((d) => (
@@ -285,14 +259,10 @@ export function Dashboard() {
                   key={d.id}
                 />
               ))}
-
           </div>
-
         </section>
 
-
         <section className="card p-6">
-
           <h2 className="font-bold">
             AI usage
           </h2>
@@ -302,7 +272,6 @@ export function Dashboard() {
           </p>
 
           <div className="mt-6 flex items-end justify-between">
-
             <span className="text-3xl font-bold">
               6,842
             </span>
@@ -310,28 +279,20 @@ export function Dashboard() {
             <span className="text-xs font-semibold text-emerald-600">
               +18% this week
             </span>
-
           </div>
 
           <div className="mt-4 h-2 rounded-full bg-slate-100 dark:bg-slate-800">
-
             <div className="h-full w-[68%] rounded-full bg-indigo-600" />
-
           </div>
 
           <p className="mt-2 text-xs text-slate-500">
             6,842 of 10,000 words used
           </p>
-
         </section>
-
       </div>
 
-
       <section className="mt-6">
-
         <div className="mb-4 flex items-center justify-between">
-
           <h2 className="text-lg font-bold">
             Favourite documents
           </h2>
@@ -342,12 +303,9 @@ export function Dashboard() {
           >
             See all
           </Link>
-
         </div>
 
-
         <div className="grid gap-4 md:grid-cols-2">
-
           {docs
             .filter((d) => d.favorite)
             .map((d) => (
@@ -355,7 +313,6 @@ export function Dashboard() {
                 key={d.id}
                 className="card p-5"
               >
-
                 <Star
                   className="fill-amber-400 text-amber-400"
                   size={16}
@@ -372,24 +329,19 @@ export function Dashboard() {
                 <p className="mt-4 text-xs text-slate-400">
                   {d.updatedAt}
                 </p>
-
               </article>
             ))}
-
         </div>
-
       </section>
     </>
   );
 }
-
 
 /* =========================================================
    AI GENERATOR
 ========================================================= */
 
 export function Generator() {
-
   const [recipient, setRecipient] =
     useState("General");
 
@@ -411,11 +363,8 @@ export function Generator() {
   const [error, setError] =
     useState("");
 
-
   const generate = async () => {
-
     if (!prompt.trim()) {
-
       setError(
         "Please describe what you want WriteWise AI to write."
       );
@@ -423,52 +372,35 @@ export function Generator() {
       return;
     }
 
-
     setError("");
     setOutput("");
     setLoading(true);
 
-
     try {
-
       const response = await generateLetter({
-
         recipient: recipient.trim(),
-
         purpose: purpose.trim(),
-
         tone: tone,
-
         content: prompt.trim(),
-
       });
 
-
       setOutput(response.letter);
-
     } catch (error: any) {
-
       console.error(
         "Letter generation failed:",
         error
       );
-
 
       const message =
         error?.response?.data?.detail ||
         error?.response?.data?.error ||
         "Failed to generate the letter. Please try again.";
 
-
       setError(message);
-
     } finally {
-
       setLoading(false);
-
     }
   };
-
 
   return (
     <>
@@ -477,17 +409,13 @@ export function Generator() {
         title="What do you want to write?"
       />
 
-
       <div className="grid gap-6 lg:grid-cols-[.9fr_1.1fr]">
-
         {/* INPUT PANEL */}
 
         <section className="card p-6">
-
           {/* RECIPIENT */}
 
           <label className="label">
-
             Recipient
 
             <input
@@ -498,14 +426,11 @@ export function Generator() {
               className="input mt-1.5"
               placeholder="Professor, Manager, Client..."
             />
-
           </label>
-
 
           {/* PURPOSE */}
 
           <label className="label mt-5">
-
             Purpose
 
             <input
@@ -516,9 +441,7 @@ export function Generator() {
               className="input mt-1.5"
               placeholder="Request project guidance..."
             />
-
           </label>
-
 
           {/* TONE */}
 
@@ -526,9 +449,7 @@ export function Generator() {
             Tone
           </label>
 
-
           <div className="flex flex-wrap gap-2">
-
             {[
               "Professional",
               "Friendly",
@@ -536,7 +457,6 @@ export function Generator() {
               "Playful",
               "Persuasive",
             ].map((t) => (
-
               <button
                 type="button"
                 key={t}
@@ -549,16 +469,12 @@ export function Generator() {
               >
                 {t}
               </button>
-
             ))}
-
           </div>
-
 
           {/* CONTENT */}
 
           <label className="label mt-5">
-
             Tell WriteWise what you need
 
             <textarea
@@ -569,9 +485,7 @@ export function Generator() {
               className="input mt-1.5 min-h-36 resize-y"
               placeholder="Describe what you want WriteWise AI to generate..."
             />
-
           </label>
-
 
           {/* ERROR */}
 
@@ -581,7 +495,6 @@ export function Generator() {
             </div>
           )}
 
-
           {/* GENERATE */}
 
           <Button
@@ -589,7 +502,6 @@ export function Generator() {
             disabled={loading}
             className="mt-5 w-full"
           >
-
             {loading ? (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
             ) : (
@@ -599,25 +511,18 @@ export function Generator() {
             {loading
               ? "Generating..."
               : "Generate Draft"}
-
           </Button>
-
         </section>
-
 
         {/* OUTPUT PANEL */}
 
         <section className="card min-h-[430px] p-6">
-
           <div className="flex items-center justify-between">
-
             <h2 className="font-bold">
               Generated Draft
             </h2>
 
-
             {output && (
-
               <Button
                 variant="secondary"
                 className="py-2"
@@ -627,24 +532,16 @@ export function Generator() {
               >
                 Copy
               </Button>
-
             )}
-
           </div>
 
-
           {output ? (
-
             <div className="mt-5 whitespace-pre-line text-sm leading-7 text-slate-600 dark:text-slate-300">
               {output}
             </div>
-
           ) : (
-
             <div className="grid h-80 place-items-center text-center">
-
               <div>
-
                 <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10">
                   <Sparkles />
                 </div>
@@ -656,27 +553,20 @@ export function Generator() {
                 <p className="mt-1 text-sm text-slate-500">
                   Choose your settings and let AI do the work.
                 </p>
-
               </div>
-
             </div>
-
           )}
-
         </section>
-
       </div>
     </>
   );
 }
-
 
 /* =========================================================
    EDITOR
 ========================================================= */
 
 export function Editor() {
-
   const toast = useToast();
 
   const [text, setText] =
@@ -684,16 +574,13 @@ export function Editor() {
       "The future of remote work\n\nRemote work is more than a change of location. It is an opportunity to redesign how we collaborate, communicate, and create meaningful work."
     );
 
-
   return (
     <>
       <Header
         eyebrow="Untitled document"
         title="Editor"
       >
-
         <div className="flex gap-2">
-
           <Button
             variant="secondary"
             onClick={() =>
@@ -705,7 +592,6 @@ export function Editor() {
             <WandSparkles size={16} />
             Rewrite
           </Button>
-
 
           <Button
             variant="secondary"
@@ -719,7 +605,6 @@ export function Editor() {
             Export
           </Button>
 
-
           <Button
             onClick={() =>
               toast.show(
@@ -729,16 +614,11 @@ export function Editor() {
           >
             Save changes
           </Button>
-
         </div>
-
       </Header>
 
-
       <section className="card overflow-hidden">
-
         <div className="flex gap-1 border-b p-3 text-sm text-slate-500">
-
           <button className="rounded px-2 py-1 font-bold hover:bg-slate-100">
             B
           </button>
@@ -760,9 +640,7 @@ export function Editor() {
           <button className="rounded px-2 py-1 hover:bg-slate-100">
             ☷
           </button>
-
         </div>
-
 
         <textarea
           aria-label="Document editor"
@@ -772,9 +650,7 @@ export function Editor() {
           }
           className="min-h-[540px] w-full resize-none bg-transparent p-8 text-lg leading-8 outline-none sm:p-12"
         />
-
       </section>
-
 
       <p className="mt-3 text-right text-xs text-slate-500">
         {
@@ -786,18 +662,15 @@ export function Editor() {
         }{" "}
         words
       </p>
-
     </>
   );
 }
-
 
 /* =========================================================
    TEMPLATES
 ========================================================= */
 
 export function Templates() {
-
   const {
     data,
     isLoading,
@@ -806,15 +679,12 @@ export function Templates() {
     queryFn: mockApi.getTemplates,
   });
 
-
   const [active, setActive] =
     useState("All");
-
 
   if (isLoading) {
     return <Loader />;
   }
-
 
   const categories = [
     "All",
@@ -824,16 +694,13 @@ export function Templates() {
     "HR",
   ];
 
-
   return (
     <>
       <Header
         eyebrow="Get a head start"
         title="Templates"
       >
-
         <div className="relative">
-
           <Search
             size={17}
             className="absolute left-3 top-3 text-slate-400"
@@ -843,16 +710,11 @@ export function Templates() {
             className="input w-64 pl-9"
             placeholder="Search templates"
           />
-
         </div>
-
       </Header>
 
-
       <div className="mb-6 flex flex-wrap gap-2">
-
         {categories.map((x) => (
-
           <button
             onClick={() => setActive(x)}
             className={`rounded-lg px-3 py-2 text-sm font-medium ${
@@ -864,14 +726,10 @@ export function Templates() {
           >
             {x}
           </button>
-
         ))}
-
       </div>
 
-
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-
         {data!
           .filter(
             (t) =>
@@ -879,12 +737,10 @@ export function Templates() {
               t.category === active
           )
           .map((t) => (
-
             <article
               className="card group p-5"
               key={t.id}
             >
-
               <div
                 className={`grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br ${t.gradient} text-white`}
               >
@@ -909,23 +765,18 @@ export function Templates() {
               >
                 Use template
               </Button>
-
             </article>
-
           ))}
-
       </div>
     </>
   );
 }
-
 
 /* =========================================================
    HISTORY — REAL BACKEND
 ========================================================= */
 
 export function History() {
-
   const {
     data,
     isLoading,
@@ -935,59 +786,44 @@ export function History() {
     queryFn: getLetterHistory,
   });
 
-
   const [search, setSearch] =
     useState("");
 
-
   const filtered = useMemo(() => {
-
     if (!data) {
       return [];
     }
 
-
     return data.filter((letter) => {
-
       const searchText =
         search.toLowerCase();
-
 
       return (
         letter.recipient
           .toLowerCase()
           .includes(searchText) ||
-
         letter.purpose
           .toLowerCase()
           .includes(searchText) ||
-
         letter.tone
           .toLowerCase()
           .includes(searchText)
       );
-
     });
-
   }, [data, search]);
-
 
   if (isLoading) {
     return <Loader />;
   }
 
-
   if (isError) {
-
     return (
       <EmptyState
         title="Unable to load your letters"
         description="Please try again."
       />
     );
-
   }
-
 
   return (
     <>
@@ -996,15 +832,11 @@ export function History() {
         title="Document history"
       />
 
-
       <div className="card overflow-hidden">
-
         {/* SEARCH */}
 
         <div className="flex flex-col gap-3 border-b p-4 sm:flex-row">
-
           <div className="relative flex-1">
-
             <Search
               size={17}
               className="absolute left-3 top-3 text-slate-400"
@@ -1018,35 +850,25 @@ export function History() {
               className="input pl-9"
               placeholder="Search letters"
             />
-
           </div>
-
 
           <Button variant="secondary">
             <Filter size={16} />
             Filters
           </Button>
-
         </div>
-
 
         {/* LETTERS */}
 
         <div className="px-5">
-
           {filtered.length ? (
-
             filtered.map((letter) => (
-
               <LetterRow
                 key={letter.id}
                 letter={letter}
               />
-
             ))
-
           ) : (
-
             <EmptyState
               title="No letters found"
               description={
@@ -1055,37 +877,28 @@ export function History() {
                   : "Generate your first letter with AI."
               }
             />
-
           )}
-
         </div>
-
 
         {/* FOOTER */}
 
         <div className="flex items-center justify-between border-t p-4 text-sm text-slate-500">
-
           <span>
             Showing {filtered.length} of{" "}
             {data?.length ?? 0} letters
           </span>
-
         </div>
-
       </div>
     </>
   );
 }
-
 
 /* =========================================================
    PROFILE
 ========================================================= */
 
 export function Profile() {
-
   const toast = useToast();
-
 
   return (
     <>
@@ -1094,17 +907,12 @@ export function Profile() {
         title="Profile"
       />
 
-
       <div className="grid gap-6 lg:grid-cols-[1fr_1.3fr]">
-
         <section className="card p-6">
-
           <div className="flex items-center gap-4">
-
             <Avatar large />
 
             <div>
-
               <h2 className="font-bold">
                 Alex Smith
               </h2>
@@ -1116,14 +924,10 @@ export function Profile() {
               <button className="mt-2 text-sm font-semibold text-indigo-600">
                 Change avatar
               </button>
-
             </div>
-
           </div>
 
-
           <div className="mt-7 border-t pt-5">
-
             <p className="text-sm font-semibold">
               Your plan
             </p>
@@ -1138,21 +942,15 @@ export function Profile() {
             >
               Manage plan
             </Button>
-
           </div>
-
         </section>
 
-
         <section className="card p-6">
-
           <h2 className="font-bold">
             Personal information
           </h2>
 
-
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
-
             <label className="label">
               First name
 
@@ -1160,9 +958,7 @@ export function Profile() {
                 className="input mt-1.5"
                 defaultValue="Alex"
               />
-
             </label>
-
 
             <label className="label">
               Last name
@@ -1171,9 +967,7 @@ export function Profile() {
                 className="input mt-1.5"
                 defaultValue="Smith"
               />
-
             </label>
-
 
             <label className="label sm:col-span-2">
               Email
@@ -1182,11 +976,8 @@ export function Profile() {
                 className="input mt-1.5"
                 defaultValue="alex@writewise.ai"
               />
-
             </label>
-
           </div>
-
 
           <Button
             className="mt-5"
@@ -1196,12 +987,9 @@ export function Profile() {
           >
             Save changes
           </Button>
-
         </section>
 
-
         <section className="card p-6 lg:col-span-2">
-
           <h2 className="font-bold">
             Connected accounts
           </h2>
@@ -1210,11 +998,8 @@ export function Profile() {
             Sign in faster and connect your favourite tools.
           </p>
 
-
           <div className="mt-5 flex items-center justify-between rounded-xl border p-4">
-
             <div>
-
               <p className="font-semibold">
                 Google
               </p>
@@ -1222,28 +1007,20 @@ export function Profile() {
               <p className="text-sm text-slate-500">
                 Not connected
               </p>
-
             </div>
-
 
             <Button variant="secondary">
               Connect
             </Button>
-
           </div>
-
         </section>
 
-
         <section className="card p-6 lg:col-span-2">
-
           <h2 className="font-bold">
             Change password
           </h2>
 
-
           <div className="mt-5 grid gap-4 md:grid-cols-3">
-
             <input
               type="password"
               className="input"
@@ -1263,28 +1040,22 @@ export function Profile() {
             >
               Update password
             </Button>
-
           </div>
-
         </section>
-
       </div>
     </>
   );
 }
-
 
 /* =========================================================
    SETTINGS
 ========================================================= */
 
 export function Settings() {
-
   const toast = useToast();
 
   const [saved, setSaved] =
     useState(false);
-
 
   return (
     <>
@@ -1293,24 +1064,17 @@ export function Settings() {
         title="Settings"
       />
 
-
       <div className="max-w-3xl space-y-6">
-
         <section className="card p-6">
-
           <h2 className="font-bold">
             Writing defaults
           </h2>
 
-
           <div className="mt-5 grid gap-5 sm:grid-cols-2">
-
             <label className="label">
-
               Default tone
 
               <select className="input mt-1.5">
-
                 <option>
                   Professional
                 </option>
@@ -1322,35 +1086,30 @@ export function Settings() {
                 <option>
                   Confident
                 </option>
-
               </select>
-
             </label>
 
-
             <label className="label">
-
               Default export format
 
               <select className="input mt-1.5">
+                <option>
+                  PDF
+                </option>
 
-                <option>PDF</option>
+                <option>
+                  DOCX
+                </option>
 
-                <option>DOCX</option>
-
-                <option>Markdown</option>
-
+                <option>
+                  Markdown
+                </option>
               </select>
-
             </label>
-
           </div>
-
         </section>
 
-
         <section className="card p-6">
-
           <h2 className="font-bold">
             Appearance
           </h2>
@@ -1359,12 +1118,9 @@ export function Settings() {
             Choose how WriteWise looks to you.
           </p>
 
-
           <div className="mt-4 grid grid-cols-3 gap-3">
-
             {["Light", "Dark", "System"].map(
               (x, i) => (
-
                 <button
                   key={x}
                   className={`rounded-xl border p-3 text-sm font-medium ${
@@ -1375,35 +1131,26 @@ export function Settings() {
                 >
                   {x}
                 </button>
-
               )
             )}
-
           </div>
-
         </section>
 
-
         <section className="card p-6">
-
           <h2 className="font-bold">
             Notifications
           </h2>
 
-
           <div className="mt-4 space-y-4">
-
             {[
               "Product updates and writing tips",
               "Weekly writing summary",
               "Document activity",
             ].map((x, i) => (
-
               <label
                 key={x}
                 className="flex items-center justify-between text-sm"
               >
-
                 <span>{x}</span>
 
                 <input
@@ -1411,15 +1158,10 @@ export function Settings() {
                   type="checkbox"
                   className="h-4 w-4 accent-indigo-600"
                 />
-
               </label>
-
             ))}
-
           </div>
-
         </section>
-
 
         <Button
           onClick={() => {
@@ -1429,31 +1171,48 @@ export function Settings() {
         >
           {saved ? "Saved" : "Save preferences"}
         </Button>
-
       </div>
     </>
   );
 }
 
+/* =========================================================
+   LETTER DETAIL
+========================================================= */
+
 export function LetterDetail() {
-  const { letterId } = useParams<{ letterId: string }>();
+  const { letterId } =
+    useParams<{ letterId: string }>();
+
   const navigate = useNavigate();
   const toast = useToast();
 
-  const [letter, setLetter] = useState<LetterHistoryItem | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [letter, setLetter] =
+    useState<LetterHistoryItem | null>(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [deleting, setDeleting] =
+    useState(false);
+
+  /* =======================================================
+     LOAD LETTER
+  ======================================================= */
 
   useEffect(() => {
     async function loadLetter() {
-      if (!letterId) {
-        navigate("/history");
+      const id = Number(letterId);
+
+      if (!letterId || !Number.isInteger(id) || id <= 0) {
+        navigate("/history", { replace: true });
         return;
       }
 
       try {
         setLoading(true);
 
-        const data = await getLetter(Number(letterId));
+        const data = await getLetter(id);
 
         setLetter(data);
       } catch (error) {
@@ -1461,25 +1220,81 @@ export function LetterDetail() {
 
         toast.show("Unable to load letter");
 
-        navigate("/history");
+        navigate("/history", { replace: true });
       } finally {
         setLoading(false);
       }
     }
 
     loadLetter();
-  }, [letterId, navigate]);
+  }, [letterId, navigate, toast]);
+
+  /* =======================================================
+     COPY LETTER
+  ======================================================= */
 
   const copyLetter = async () => {
     if (!letter) return;
 
     try {
-      await navigator.clipboard.writeText(letter.generated_content);
-      toast.show("Letter copied to clipboard");
+      await navigator.clipboard.writeText(
+        letter.generated_content
+      );
+
+      toast.show(
+        "Letter copied to clipboard"
+      );
     } catch {
-      toast.show("Failed to copy letter");
+      toast.show(
+        "Failed to copy letter"
+      );
     }
   };
+
+  /* =======================================================
+     DELETE LETTER
+  ======================================================= */
+
+  const handleDelete = async () => {
+    if (!letterId) return;
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this letter?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setDeleting(true);
+
+      await deleteLetter(
+        Number(letterId)
+      );
+
+      toast.show(
+        "Letter deleted successfully"
+      );
+
+      navigate("/history");
+    } catch (error) {
+      console.error(
+        "Failed to delete letter:",
+        error
+      );
+
+      toast.show(
+        "Failed to delete letter"
+      );
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  /* =======================================================
+     LOADING
+  ======================================================= */
 
   if (loading) {
     return (
@@ -1491,19 +1306,29 @@ export function LetterDetail() {
     );
   }
 
+  /* =======================================================
+     NO LETTER
+  ======================================================= */
+
   if (!letter) {
     return null;
   }
 
+  /* =======================================================
+     PAGE
+  ======================================================= */
+
   return (
     <>
       <div className="mx-auto max-w-5xl">
+        {/* HEADER */}
 
-        {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
             <button
-              onClick={() => navigate("/history")}
+              onClick={() =>
+                navigate("/history")
+              }
               className="mb-3 text-sm font-medium text-indigo-600 hover:text-indigo-700"
             >
               ← Back to history
@@ -1518,23 +1343,35 @@ export function LetterDetail() {
             </p>
           </div>
 
-          <Button onClick={copyLetter}>
-            Copy
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="text-rose-600 hover:text-rose-700"
+            >
+              {deleting
+                ? "Deleting..."
+                : "Delete"}
+            </Button>
+
+            <Button onClick={copyLetter}>
+              Copy
+            </Button>
+          </div>
         </div>
 
-        {/* Letter information */}
+        {/* LETTER INFORMATION */}
+
         <div className="grid gap-6 lg:grid-cols-3">
+          {/* METADATA */}
 
-          {/* Metadata */}
           <div className="card h-fit p-6">
-
             <h2 className="text-lg font-semibold">
               Details
             </h2>
 
             <div className="mt-6 space-y-5">
-
               <div>
                 <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
                   Recipient
@@ -1571,16 +1408,17 @@ export function LetterDetail() {
                 </p>
 
                 <p className="mt-1 text-sm text-slate-600">
-                  {new Date(letter.created_at).toLocaleString()}
+                  {new Date(
+                    letter.created_at
+                  ).toLocaleString()}
                 </p>
               </div>
-
             </div>
           </div>
 
-          {/* Letter */}
-          <div className="card lg:col-span-2">
+          {/* GENERATED LETTER */}
 
+          <div className="card lg:col-span-2">
             <div className="flex items-center justify-between border-b px-6 py-4">
               <h2 className="font-semibold">
                 Generated Letter
@@ -1599,13 +1437,12 @@ export function LetterDetail() {
                 {letter.generated_content}
               </div>
             </div>
-
           </div>
         </div>
 
-        {/* Original request */}
-        <div className="card mt-6 p-6">
+        {/* ORIGINAL REQUEST */}
 
+        <div className="card mt-6 p-6">
           <h2 className="text-lg font-semibold">
             Original Request
           </h2>
@@ -1613,24 +1450,20 @@ export function LetterDetail() {
           <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-slate-600">
             {letter.content}
           </p>
-
         </div>
-
       </div>
     </>
   );
 }
+
 /* =========================================================
    404
 ========================================================= */
 
 export function NotFound() {
-
   return (
     <div className="grid min-h-[70vh] place-items-center text-center">
-
       <div>
-
         <p className="text-7xl font-bold text-indigo-600">
           404
         </p>
@@ -1648,9 +1481,7 @@ export function NotFound() {
             Go to dashboard
           </Button>
         </Link>
-
       </div>
-
     </div>
   );
 }

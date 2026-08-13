@@ -1,8 +1,8 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from 'react-router-dom'
 
-import { AppLayout } from "./layouts/AppLayout";
+import { AppLayout } from './layouts/AppLayout'
 
-import { Auth, Landing } from "./pages/Public";
+import { Auth, Landing } from './pages/Public'
 
 import {
   Dashboard,
@@ -14,21 +14,21 @@ import {
   Profile,
   Settings,
   Templates,
-} from "./pages/AppPages";
+} from './pages/AppPages'
 
 const authed = (page: React.ReactNode) => (
   <AppLayout>{page}</AppLayout>
-);
+)
 
 export default function App() {
   return (
     <Routes>
-      {/* Public routes */}
+      {/* Public pages */}
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Auth />} />
       <Route path="/register" element={<Auth register />} />
 
-      {/* Application routes */}
+      {/* Application pages */}
       <Route
         path="/dashboard"
         element={authed(<Dashboard />)}
@@ -55,7 +55,7 @@ export default function App() {
         element={authed(<History />)}
       />
 
-      {/* Individual letter */}
+      {/* IMPORTANT: Individual letter */}
       <Route
         path="/history/:letterId"
         element={authed(<LetterDetail />)}
@@ -77,11 +77,10 @@ export default function App() {
         element={authed(<NotFound />)}
       />
 
-      {/* Catch-all */}
       <Route
         path="*"
         element={<Navigate to="/404" replace />}
       />
     </Routes>
-  );
+  )
 }

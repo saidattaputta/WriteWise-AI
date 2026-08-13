@@ -70,3 +70,16 @@ export async function getLetter(
 
     return response.data;
 }
+
+
+/**
+ * Delete a letter belonging to the authenticated user.
+ */
+export async function deleteLetter(
+    letterId: number
+): Promise<void> {
+
+    await api.delete(
+        `/letters/${letterId}`
+    );
+}
