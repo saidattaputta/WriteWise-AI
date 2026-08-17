@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { AppLayout } from './layouts/AppLayout'
+import { ProtectedRoute } from './components/ProtectedRoute'
 
 import { Auth, Landing } from './pages/Public'
 
@@ -17,7 +18,9 @@ import {
 } from './pages/AppPages'
 
 const authed = (page: React.ReactNode) => (
-  <AppLayout>{page}</AppLayout>
+  <ProtectedRoute>
+    <AppLayout>{page}</AppLayout>
+  </ProtectedRoute>
 )
 
 export default function App() {
@@ -28,7 +31,7 @@ export default function App() {
       <Route path="/login" element={<Auth />} />
       <Route path="/register" element={<Auth register />} />
 
-      {/* Application pages */}
+      {/* Protected application pages */}
       <Route
         path="/dashboard"
         element={authed(<Dashboard />)}
@@ -55,7 +58,7 @@ export default function App() {
         element={authed(<History />)}
       />
 
-      {/* IMPORTANT: Individual letter */}
+      {/* Individual letter */}
       <Route
         path="/history/:letterId"
         element={authed(<LetterDetail />)}
