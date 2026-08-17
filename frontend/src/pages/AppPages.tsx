@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
 import {
   Button,
@@ -164,18 +164,27 @@ function LetterRow({
 export function Dashboard() {
   const { data: currentUser } = useCurrentUser()
   const {
-    data,
+    data: letters,
     isLoading,
+    isError,
   } = useQuery({
-    queryKey: ["documents"],
-    queryFn: mockApi.getDocuments,
+    queryKey: ["letters"],
+    queryFn: getLetterHistory,
   });
 
   if (isLoading) {
     return <Loader />;
   }
 
-  const docs = data!;
+  const recentLetters = (letters ?? []).slice(0, 3);
+
+  const docs = (letters ?? []).map((letter) => ({
+    id: letter.id,
+    title: letter.recipient,
+    excerpt: letter.purpose,
+    updatedAt: new Date(letter.updated_at).toLocaleDateString(),
+    favorite: letter.id % 2 === 0,
+  }));
 
   return (
     <>
@@ -242,7 +251,7 @@ export function Dashboard() {
         <section className="card p-6">
           <div className="flex items-center justify-between">
             <h2 className="font-bold">
-              Recent documents
+              Recent letters
             </h2>
 
             <Link
@@ -254,17 +263,33 @@ export function Dashboard() {
           </div>
 
           <div className="mt-3">
-            {docs
-              .slice(0, 3)
-              .map((d) => (
-                <DocRow
-                  doc={d}
-                  key={d.id}
+            {isError ? (
+              <p className="py-6 text-sm text-slate-500">
+                Unable to load your recent letters.
+              </p>
+            ) : recentLetters.length === 0 ? (
+              <div className="py-6 text-center">
+                <p className="text-sm text-slate-500">
+                  No letters generated yet.
+                </p>
+
+                <Link
+                  to="/generator"
+                  className="mt-2 inline-block text-sm font-semibold text-indigo-600"
+                >
+                  Create your first letter
+                </Link>
+              </div>
+            ) : (
+              recentLetters.map((letter) => (
+                <LetterRow
+                  key={letter.id}
+                  letter={letter}
                 />
-              ))}
+              ))
+            )}
           </div>
         </section>
-
         <section className="card p-6">
           <h2 className="font-bold">
             AI usage
@@ -345,39 +370,68 @@ export function Dashboard() {
 ========================================================= */
 
 export function Generator() {
+  const location = useLocation()
+
+  const template = location.state?.template
+
   const [recipient, setRecipient] =
-    useState("General");
+    useState("General")
 
   const [purpose, setPurpose] =
-    useState("General Writing");
+    useState("General Writing")
 
   const [prompt, setPrompt] =
-    useState("");
+    useState("")
 
   const [tone, setTone] =
-    useState("Professional");
+    useState("Professional")
 
   const [output, setOutput] =
-    useState("");
+    useState("")
 
   const [loading, setLoading] =
-    useState(false);
+    useState(false)
 
   const [error, setError] =
-    useState("");
+    useState("")
+
+  /*
+   * Apply selected template values.
+   *
+   * Templates currently provide:
+   * - title
+   * - category
+   * - description
+   */
+  useEffect(() => {
+    if (!template) {
+      return
+    }
+
+    setPurpose(template.title)
+    setPrompt(template.description)
+
+    // Keep the default recipient and tone.
+    setRecipient("General")
+    setTone("Professional")
+
+    // Clear any previous generated output/errors
+    setOutput("")
+    setError("")
+  }, [template])
 
   const generate = async () => {
     if (!prompt.trim()) {
       setError(
-        "Please describe what you want WriteWise AI to write."
-      );
+        "Please describe what you want WriteWise to write."
+      )
 
-      return;
+      return
     }
 
-    setError("");
-    setOutput("");
-    setLoading(true);
+    setError("")
+    setOutput("")
+    setLoading(true)
 
     try {
       const response = await generateLetter({
@@ -385,25 +439,25 @@ export function Generator() {
         purpose: purpose.trim(),
         tone: tone,
         content: prompt.trim(),
-      });
+      })
 
-      setOutput(response.letter);
+      setOutput(response.letter)
     } catch (error: any) {
       console.error(
         "Letter generation failed:",
         error
-      );
+      )
 
       const message =
         error?.response?.data?.detail ||
         error?.response?.data?.error ||
-        "Failed to generate the letter. Please try again.";
+        "Failed to generate the letter. Please try again."
 
-      setError(message);
+      setError(message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <>
@@ -413,9 +467,29 @@ export function Generator() {
       />
 
       <div className="grid gap-6 lg:grid-cols-[.9fr_1.1fr]">
+
         {/* INPUT PANEL */}
 
         <section className="card p-6">
+
+          {/* SELECTED TEMPLATE */}
+
+          {template && (
+            <div className="mb-5 rounded-xl border border-indigo-100 bg-indigo-50 p-3 dark:border-indigo-500/20 dark:bg-indigo-500/10">
+              <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-indigo-300">
+                Template selected
+              </p>
+
+              <p className="mt-1 text-sm font-semibold">
+                {template.title}
+              </p>
+
+              <p className="mt-1 text-xs text-slate-500">
+                {template.description}
+              </p>
+            </div>
+          )}
+
           {/* RECIPIENT */}
 
           <label className="label">
@@ -520,6 +594,7 @@ export function Generator() {
         {/* OUTPUT PANEL */}
 
         <section className="card min-h-[430px] p-6">
+
           <div className="flex items-center justify-between">
             <h2 className="font-bold">
               Generated Draft
@@ -562,9 +637,8 @@ export function Generator() {
         </section>
       </div>
     </>
-  );
+  )
 }
-
 /* =========================================================
    EDITOR
 ========================================================= */
@@ -674,6 +748,7 @@ export function Editor() {
 ========================================================= */
 
 export function Templates() {
+  const navigate = useNavigate()
   const {
     data,
     isLoading,
@@ -765,6 +840,17 @@ export function Templates() {
               <Button
                 variant="secondary"
                 className="mt-5 w-full group-hover:bg-indigo-600 group-hover:text-white"
+                onClick={() =>
+                  navigate("/generator", {
+                    state: {
+                      template: {
+                        title: t.title,
+                        category: t.category,
+                        description: t.description,
+                      },
+                    },
+                  })
+                }
               >
                 Use template
               </Button>
@@ -781,7 +867,7 @@ export function Templates() {
 
 export function History() {
   const {
-    data,
+    data: letters,
     isLoading,
     isError,
   } = useQuery({
@@ -793,11 +879,11 @@ export function History() {
     useState("");
 
   const filtered = useMemo(() => {
-    if (!data) {
+    if (!letters) {
       return [];
     }
 
-    return data.filter((letter) => {
+    return letters.filter((letter) => {
       const searchText =
         search.toLowerCase();
 
@@ -813,7 +899,7 @@ export function History() {
           .includes(searchText)
       );
     });
-  }, [data, search]);
+  }, [letters, search]);
 
   if (isLoading) {
     return <Loader />;
@@ -888,7 +974,7 @@ export function History() {
         <div className="flex items-center justify-between border-t p-4 text-sm text-slate-500">
           <span>
             Showing {filtered.length} of{" "}
-            {data?.length ?? 0} letters
+            {letters?.length ?? 0} letters
           </span>
         </div>
       </div>

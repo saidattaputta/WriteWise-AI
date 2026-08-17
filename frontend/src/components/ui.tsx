@@ -4,7 +4,25 @@ import { useTheme } from '../hooks/useTheme'
 
 export function Button({children,variant='primary',className='',...props}: ButtonHTMLAttributes<HTMLButtonElement>&{variant?:'primary'|'secondary'|'ghost'|'danger'}) { const styles={primary:'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-600/20',secondary:'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100',ghost:'hover:bg-slate-100 dark:hover:bg-slate-800',danger:'bg-rose-600 text-white hover:bg-rose-700'}; return <button className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${styles[variant]} ${className}`} {...props}>{children}</button> }
 export function ThemeToggle(){ const {theme,toggle}=useTheme(); return <button onClick={toggle} aria-label="Toggle color theme" className="rounded-xl p-2.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">{theme==='dark'?<Sun size={18}/>:<Moon size={18}/>}</button> }
-export function Avatar({large=false}:{large?:boolean}) { return <div className={`${large?'h-20 w-20 text-2xl':'h-9 w-9 text-sm'} grid shrink-0 place-items-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 font-bold text-white ring-2 ring-white dark:ring-slate-900`}>AS</div> }
+export function Avatar({
+  large = false,
+  initials = 'AS',
+}: {
+  large?: boolean
+  initials?: string
+}) {
+  return (
+    <div
+      className={`${
+        large
+          ? 'h-20 w-20 text-2xl'
+          : 'h-9 w-9 text-sm'
+      } grid shrink-0 place-items-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 font-bold text-white ring-2 ring-white dark:ring-slate-900`}
+    >
+      {initials}
+    </div>
+  )
+}
 type Toast={id:number; message:string; kind:'success'|'info'}; const ToastContext=createContext<{show:(message:string,kind?:Toast['kind'])=>void}>({show:()=>{}})
 export function ToastProvider({children}:{children:ReactNode}) { const [toasts,setToasts]=useState<Toast[]>([]); const show=(message:string,kind:Toast['kind']='success')=>{const id=Date.now();setToasts(t=>[...t,{id,message,kind}]);setTimeout(()=>setToasts(t=>t.filter(x=>x.id!==id)),3000)}; return <ToastContext.Provider value={{show}}>{children}<div className="fixed bottom-5 right-5 z-50 grid gap-2">{toasts.map(t=><div key={t.id} className="flex items-center gap-3 rounded-xl border bg-white px-4 py-3 text-sm font-medium shadow-xl dark:bg-slate-900">{t.kind==='success'?<CheckCircle2 className="text-emerald-500" size={19}/>:<Info className="text-indigo-500" size={19}/>} {t.message}<button onClick={()=>setToasts(a=>a.filter(x=>x.id!==t.id))}><X size={16}/></button></div>)}</div></ToastContext.Provider> }
 export const useToast=()=>useContext(ToastContext)
