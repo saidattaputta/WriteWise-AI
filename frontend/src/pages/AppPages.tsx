@@ -5,6 +5,8 @@ import {
   deleteLetter,
 } from "../services/letterService";
 
+import { useCurrentUser } from '../hooks/useCurrentUser'
+
 import { useQuery } from "@tanstack/react-query";
 
 import {
@@ -160,6 +162,7 @@ function LetterRow({
 ========================================================= */
 
 export function Dashboard() {
+  const { data: currentUser } = useCurrentUser()
   const {
     data,
     isLoading,
@@ -177,7 +180,7 @@ export function Dashboard() {
   return (
     <>
       <Header
-        eyebrow="Good morning, Alex"
+        eyebrow={`Good morning, ${currentUser?.full_name?.split(' ')[0] ?? 'there'}`}
         title="What will you create today?"
       >
         <Link to="/generator">
@@ -898,7 +901,12 @@ export function History() {
 ========================================================= */
 
 export function Profile() {
+  const { data: currentUser, isLoading } = useCurrentUser()
   const toast = useToast();
+
+  const fullName = currentUser?.full_name ?? "Alex Smith";
+  const [firstName, ...lastNameParts] = fullName.split(/\s+/);
+  const lastName = lastNameParts.join(" ") || "Smith";
 
   return (
     <>
@@ -914,11 +922,11 @@ export function Profile() {
 
             <div>
               <h2 className="font-bold">
-                Alex Smith
+                {currentUser?.full_name ?? 'User'}
               </h2>
 
               <p className="text-sm text-slate-500">
-                alex@writewise.ai
+                {currentUser?.email ?? ''}
               </p>
 
               <button className="mt-2 text-sm font-semibold text-indigo-600">
@@ -956,7 +964,7 @@ export function Profile() {
 
               <input
                 className="input mt-1.5"
-                defaultValue="Alex"
+                defaultValue={currentUser?.full_name?.split(' ')[0] ?? 'Alex'}
               />
             </label>
 
@@ -965,7 +973,7 @@ export function Profile() {
 
               <input
                 className="input mt-1.5"
-                defaultValue="Smith"
+                defaultValue={currentUser?.full_name?.split(' ').slice(1).join(' ') ?? 'Smith'} 
               />
             </label>
 
@@ -974,7 +982,8 @@ export function Profile() {
 
               <input
                 className="input mt-1.5"
-                defaultValue="alex@writewise.ai"
+                value={currentUser?.email ?? ''}
+readOnly
               />
             </label>
           </div>
