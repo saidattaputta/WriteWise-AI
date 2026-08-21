@@ -7,7 +7,10 @@ import {
 
 import { useCurrentUser } from '../hooks/useCurrentUser'
 
-import { useQuery } from "@tanstack/react-query";
+import { 
+  useQuery,
+  useQueryClient,
+ } from "@tanstack/react-query";
 
 import {
   Download,
@@ -19,6 +22,7 @@ import {
   Search,
   Sparkles,
   Star,
+  Trash2,
   WandSparkles,
 } from "lucide-react";
 
@@ -127,8 +131,12 @@ function DocRow({ doc }: { doc: Document }) {
 
 function LetterRow({
   letter,
+  onDelete,
+  deleting,
 }: {
   letter: LetterHistoryItem;
+  onDelete?: (letterId: number) => Promise<void>;
+  deleting?: boolean;
 }) {
   return (
     <Link
@@ -150,9 +158,25 @@ function LetterRow({
         </p>
       </div>
 
-      <div className="rounded-lg p-2 text-slate-400">
-        <MoreHorizontal size={18} />
-      </div>
+      <button
+        type="button"
+        className="rounded-lg p-2 text-slate-400 hover:text-red-600 disabled:opacity-50"
+        aria-label={`Delete letter from ${letter.recipient}`}
+        disabled={deleting ?? false}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (onDelete) {
+            void onDelete(letter.id);
+          }
+        }}
+      >
+        {deleting ? (
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-red-600" />
+        ) : (
+          <Trash2 size={18} />
+        )}
+      </button>
     </Link>
   );
 }
@@ -866,6 +890,8 @@ export function Templates() {
 ========================================================= */
 
 export function History() {
+  const queryClient = useQueryClient();
+
   const {
     data: letters,
     isLoading,
@@ -875,8 +901,8 @@ export function History() {
     queryFn: getLetterHistory,
   });
 
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] = useState("");
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const filtered = useMemo(() => {
     if (!letters) {
@@ -884,8 +910,7 @@ export function History() {
     }
 
     return letters.filter((letter) => {
-      const searchText =
-        search.toLowerCase();
+      const searchText = search.toLowerCase();
 
       return (
         letter.recipient
@@ -900,6 +925,37 @@ export function History() {
       );
     });
   }, [letters, search]);
+
+  const handleDelete = async (letterId: number) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this letter?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setDeletingId(letterId);
+
+      await deleteLetter(letterId);
+
+      await queryClient.invalidateQueries({
+        queryKey: ["letters"],
+      });
+    } catch (error) {
+      console.error(
+        "Failed to delete letter:",
+        error
+      );
+
+      alert(
+        "Failed to delete the letter. Please try again."
+      );
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   if (isLoading) {
     return <Loader />;
@@ -922,6 +978,7 @@ export function History() {
       />
 
       <div className="card overflow-hidden">
+
         {/* SEARCH */}
 
         <div className="flex flex-col gap-3 border-b p-4 sm:flex-row">
@@ -955,6 +1012,8 @@ export function History() {
               <LetterRow
                 key={letter.id}
                 letter={letter}
+                onDelete={handleDelete}
+                deleting={deletingId === letter.id}
               />
             ))
           ) : (
