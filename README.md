@@ -8,7 +8,7 @@ The application combines a React frontend, FastAPI backend, PostgreSQL database,
 
 ---
 
-## 🚀 Live Application
+##  Live Application
 
 **Frontend:**  
 https://writewise-ai-frontend.onrender.com
@@ -19,13 +19,12 @@ https://writewise-ai-1.onrender.com
 **API Documentation:**  
 https://writewise-ai-1.onrender.com/docs
 
-> Replace the frontend URL above with your actual Render frontend URL if it is different.
 
 ---
 
-## ✨ Features
+##  Features
 
-### 🤖 AI-Powered Letter Generation
+###  AI-Powered Letter Generation
 
 Generate professional writing using:
 
@@ -44,7 +43,7 @@ Supported tones include:
 
 WriteWise sends the structured request to the backend, builds an AI prompt, generates the response using Gemini, cleans the response, and returns the generated letter to the frontend.
 
-### 🔐 Authentication
+###  Authentication
 
 WriteWise includes user authentication using:
 
@@ -56,7 +55,7 @@ WriteWise includes user authentication using:
 
 Passwords are never stored as plain text.
 
-### 📝 Letter History
+###  Letter History
 
 Generated letters are stored in PostgreSQL and associated with the authenticated user.
 
@@ -67,11 +66,11 @@ Users can:
 - Copy generated content
 - Delete letters
 
-### 📋 Templates
+###  Templates
 
 Users can start from predefined writing templates and automatically populate the generator with an appropriate purpose and starting prompt.
 
-### ⚡ REST API
+###  REST API
 
 The backend is built with FastAPI and provides versioned endpoints for:
 
@@ -83,7 +82,7 @@ The backend is built with FastAPI and provides versioned endpoints for:
 - Letter deletion
 - Health/status information
 
-### 🗄️ Persistent Database
+###  Persistent Database
 
 Production data is stored in PostgreSQL.
 
@@ -91,7 +90,7 @@ Database schema changes are managed using Alembic migrations.
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 ```text
                          ┌──────────────────────┐
@@ -130,93 +129,96 @@ Database schema changes are managed using Alembic migrations.
 ----
 ## Application Flow
 
-User
- │
- ▼
-Login / Register
- │
- ▼
-Letter Generator
- │
- ├── Recipient
- ├── Purpose
- ├── Tone
- └── Requirements
- │
- ▼
-FastAPI Backend
- │
- ▼
+```text
+        User
+         │
+         ▼
+    Login / Register
+         │
+         ▼
+    Letter Generator
+         │
+         ├── Recipient
+         ├── Purpose
+         ├── Tone
+         └── Requirements
+         │
+         ▼
+    FastAPI Backend
+         │
+         ▼
 Authentication & Validation
- │
- ▼
-Prompt Builder
- │
- ▼
-Gemini API
- │
- ▼
-Response Parser
- │
- ▼
-Generated Letter
- │
- ├───────────────┐
- ▼               ▼
-Frontend       PostgreSQL
- │               │
- ▼               ▼
-View / Copy     History
- / Delete
+         │
+         ▼
+    Prompt Builder
+         │
+         ▼
+    Gemini API
+         │
+         ▼
+    Response Parser
+         │
+         ▼
+    Generated Letter
+         │
+         ├───────────────┐
+         ▼               ▼
+        Frontend       PostgreSQL
+         │               │
+         ▼               ▼
+        View / Copy     History
+        / Delete
 
+```
 ----
 ## Tech Stack
 
 ### Frontend
-React
-TypeScript
-Vite
-Tailwind CSS
-React Router
-TanStack Query
-Axios
-Lucide React
+    React
+    TypeScript
+    Vite
+    Tailwind CSS
+    React Router
+    TanStack Query
+    Axios
+    Lucide React
 
 ### Backend
-Python
-FastAPI
-Uvicorn
-Pydantic
-SQLAlchemy
-Alembic
+    Python
+    FastAPI
+    Uvicorn
+    Pydantic
+    SQLAlchemy
+    Alembic
 
 ### Authentication & Security
-JWT
-python-jose
-Passlib
-bcrypt
-HTTP Bearer authentication
+    JWT
+    python-jose
+    Passlib
+    bcrypt
+    HTTP Bearer authentication
 
 ### AI
-Google Gemini API
-Google GenAI SDK
-Custom prompt builder
-Response parser
+    Google Gemini API
+    Google GenAI SDK
+    Custom prompt builder
+    Response parser
 
 ### Database
-PostgreSQL
-SQLite for local development
-SQLAlchemy ORM
-Alembic migrations
+    PostgreSQL
+    SQLite for local development
+    SQLAlchemy ORM
+    Alembic migrations
 
 ### Deployment
-Render
-Render PostgreSQL
-GitHub
+    Render
+    Render PostgreSQL
+    GitHub
 
 ----
 
 ## Project Structure
+```text
 Writewise-AI/
 │
 ├── backend/
@@ -288,6 +290,7 @@ Writewise-AI/
     │
     ├── package.json
     └── ...
+```
 
 ----
 
@@ -296,10 +299,10 @@ Writewise-AI/
 WriteWise uses JWT-based authentication.
 
 ### Registration
-POST /api/v1/auth/register
+    POST /api/v1/auth/register
 
 During registration
-
+```text
 Plain Password
       │
       ▼
@@ -310,22 +313,22 @@ Password Hash
       │
       ▼
    Database
-
+``` 
 The original password is never stored.
 
 ### Login
-POST /api/v1/auth/login
+    POST /api/v1/auth/login
 
 The backend:
 
-Finds the user.
-Verifies the password.
-Generates a JWT access token.
-Returns the token to the frontend.
+    Finds the user.
+    Verifies the password.
+    Generates a JWT access token.
+    Returns the token to the frontend.
 
 Protected requests use:
 
-Authorization: Bearer <access_token>
+    Authorization: Bearer <access_token>
 
 ## AI Generation Pipeline
 
@@ -333,6 +336,7 @@ WriteWise uses Google's Gemini API to generate letters.
 
 The generation process is separated into multiple components.
 
+```text
 User Input
     │
     ▼
@@ -352,6 +356,7 @@ Response Parser
     │
     ▼
 Clean Letter
+```
 
 This separation keeps the AI integration independent from the API endpoints and makes the generation workflow easier to maintain.
 
@@ -360,25 +365,25 @@ This separation keeps the AI integration independent from the API endpoints and 
 
 The API is versioned under:
 
-/api/v1
+    /api/v1
 
 ### Authentication
-POST /api/v1/auth/register
-POST /api/v1/auth/login
+    POST /api/v1/auth/register
+    POST /api/v1/auth/login
 
 ### Letters
-POST   /api/v1/letters
-GET    /api/v1/letters
-GET    /api/v1/letters/{letter_id}
-DELETE /api/v1/letters/{letter_id}
+    POST   /api/v1/letters
+    GET    /api/v1/letters
+    GET    /api/v1/letters/{letter_id}
+    DELETE /api/v1/letters/{letter_id}
 
 ### Application
-GET /api/v1/health
-GET /api/v1/info
+    GET /api/v1/health
+    GET /api/v1/info
 
 Interactive API documentation is available through FastAPI Swagger UI:
 
-https://writewise-ai-1.onrender.com/docs
+    https://writewise-ai-1.onrender.com/docs
 
 ----
 ## Database
@@ -386,9 +391,11 @@ https://writewise-ai-1.onrender.com/docs
 WriteWise uses SQLAlchemy as the ORM.
 
 Main entities
+```text
 User
  │
  └──< Letter
+```
 
 A user can have multiple generated letters.
 
@@ -415,10 +422,10 @@ Make sure you have:
 - Gemini API key
 
 ### Clone the Repository
-git clone https://github.com/saidattaputta/WriteWise-AI.git
+    git clone https://github.com/saidattaputta/WriteWise-AI.git
 
 
-cd WriteWise-AI
+    cd WriteWise-AI
 
 ### Backend Setup
 
@@ -442,7 +449,8 @@ Install dependencies:
 
     pip install -r requirements.txt
 
-#### Environment Variables
+
+### Environment Variables
 
 Create a .env file inside the backend directory.
 
@@ -472,13 +480,13 @@ Never commit:
 
 or API keys and secrets to the repository.
 
-#### Database Migration
+### Database Migration
 
 Run:
 
     alembic upgrade head
 
-#### Start the Backend
+### Start the Backend
 
     uvicorn app.main:app --reload
 
@@ -527,7 +535,7 @@ The production architecture consists of:
                               ▼                     ▼
                        PostgreSQL DB           Gemini API
 
-#### Backend
+## Backend
 
 The FastAPI application is deployed as a Render Web Service.
 
@@ -535,17 +543,17 @@ Production start command:
 
     uvicorn app.main:app --host 0.0.0.0 --port $PORT
 
-#### Database
+## Database
 
 Production PostgreSQL is hosted through Render.
 
 Alembic migrations are used to create and update the database schema.
 
-#### Frontend
+## Frontend
 
 The React frontend is deployed separately and configured to communicate with the production FastAPI API.
 
-#### Testing
+## Testing
 
 Backend tests can be run using:
 
@@ -629,21 +637,22 @@ WriteWise AI demonstrates practical experience with:
 
 ## Screenshots
 
-![Dashboard](/Users/saidattaputta/Desktop/Writewise-AI/pngs/dashboard.png)
+![Dashboard](pngs/dashboard.png)
 
 
-![Letter Generator](/Users/saidattaputta/Desktop/Writewise-AI/pngs/letter_generation.png)
+![Letter Generator](pngs/letter_generation.png)
 
 
-![Letter History](/Users/saidattaputta/Desktop/Writewise-AI/pngs/letter_history.png)
+![Letter History](pngs/letter_history.png)
 
-## Author
-Sai Datta Putta
+## Developer
+
+**Sai Datta Putta**
 
 Integrated M.Sc. Mathematics
 National Institute of Technology, Warangal
 
-#### Interests
+**Interests**
 
 - AI/ML
 - Data Science
