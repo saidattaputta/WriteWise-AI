@@ -2,7 +2,7 @@ import axios from "axios";
 import type { Document, Template } from "../types";
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/api/v1",
+  baseURL: "https://writewise-ai-1.onrender.com/api/v1",
   headers: {
     "Content-Type": "application/json",
   },
