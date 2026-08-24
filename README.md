@@ -649,8 +649,8 @@ WriteWise AI demonstrates practical experience with:
 
 **Sai Datta Putta**
 
-Integrated M.Sc. Mathematics
-National Institute of Technology, Warangal
+Integrated M.Sc. Mathematics  
+National Institute of Technology Warangal
 
 **Interests**
 
