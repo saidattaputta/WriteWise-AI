@@ -138,6 +138,8 @@ WriteWise demonstrates a complete core workflow from account creation to AI-assi
 
 Application screenshots are available in the `pngs/` directory.
 
-## Author
+---
 
-Sai Datta Putta
+**Sai Datta Putta**
+
+[LinkedIn](https://www.linkedin.com/in/sai-datta-putta/)
